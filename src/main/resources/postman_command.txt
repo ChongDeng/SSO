@@ -7,4 +7,5 @@ http://localhost:8080/user/add
 	"email":"fqyyang@gmail.com"}
 
 
-
+2 激活用户
+http://127.0.0.1:8080/user/enable?key=b2098b0b0cf96af1d9516285aa03d6a3zfRPpQmBgc
