@@ -87,7 +87,7 @@ public class HashUtil {
      * @param salt, password
      * returns hash string
      */
-    public String getHashSSHA(String salt, String password) throws Exception {
+    public static String getHashSSHA(String salt, String password) throws Exception {
 
         final Base64.Encoder encoder = Base64.getEncoder();
         String info = sha1(password +  salt) + salt;

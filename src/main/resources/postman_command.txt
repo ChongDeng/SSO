@@ -9,3 +9,19 @@ http://localhost:8080/user/add
 
 2 激活用户
 http://127.0.0.1:8080/user/enable?key=b2098b0b0cf96af1d9516285aa03d6a3zfRPpQmBgc
+
+
+3 登录
+http://localhost:8080/user/auth
+
+{
+	"login_name":"honda",
+	"password":"honda",
+	"email":"fqyyang@gmail.com"}
+
+4 鉴权
+http://localhost:8080/user/get?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJmcXlhbmdfdXNlciIsIm5hbWUiOiJob25kYSIsImV4cCI6MTU4MTAwODg0OSwiZW1haWwiOiJmcXl5YW5nQGdtYWlsLmNvbSIsInRzIjoiMTU4MDkyMjQ0OSJ9.LfKB3XD-MFauJ-0VRz5Q4UUDKpJvFDzoEnDK94tyae0
+
+
+4 登出
+http://localhost:8080/user/logout?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJmcXlhbmdfdXNlciIsIm5hbWUiOiJob25kYSIsImV4cCI6MTU4MTAwOTk2MSwiZW1haWwiOiJmcXl5YW5nQGdtYWlsLmNvbSIsInRzIjoiMTU4MDkyMzU2MSJ9.5s0W3O2PzHQgVlugWygjLEZUHf3pWLJlPpKXAbToBpI

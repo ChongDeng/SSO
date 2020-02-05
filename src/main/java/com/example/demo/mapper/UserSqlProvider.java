@@ -269,4 +269,92 @@ public class UserSqlProvider {
 
         return sql.toString();
     }
+
+    public String select(User record) {
+
+        String sql= new SQL(){{
+            SELECT("*");
+            FROM("user");
+
+            if (record.getId() != null) {
+                WHERE("id = #{id}");
+            }
+
+            if (record.getCompany_id() != null) {
+                WHERE("company_id = #{company_id}");
+            }
+
+            if (record.getLogin_name() != null) {
+                WHERE("login_name = #{login_name}");
+            }
+
+            if (record.getPassword() != null) {
+                WHERE("password = #{password}");
+            }
+
+            if (record.getFull_name() != null) {
+                WHERE("full_name = #{full_name}");
+            }
+
+            if (record.getDefault_project_id() != null) {
+                WHERE("default_project_id = #{default_project_id}");
+            }
+
+            if (record.getTime_zone() != null) {
+                WHERE("time_zone = #{time_zone}");
+            }
+
+            if (record.getLanguage() != null) {
+                WHERE("language = #{language}");
+            }
+
+            if (record.getConx_chat_notification() != null) {
+                WHERE("conx_chat_notification = #{conx_chat_notification}");
+            }
+
+            if (record.getEmail_notification() != null) {
+                WHERE("email_notification = #{email_notification}");
+            }
+
+            if (record.getConx_cloud_user_name() != null) {
+                WHERE("conx_cloud_user_name = #{conx_cloud_user_name}");
+            }
+
+            if (record.getStatus() != null) {
+                WHERE("status = #{status}");
+            }
+
+            if (record.getCreated_by() != null) {
+                WHERE("created_by = #{created_by}");
+            }
+
+            if (record.getCreated() != null) {
+                WHERE("created = #{created}");
+            }
+
+            if (record.getModified_by() != null) {
+                WHERE("modified_by = #{modified_by}");
+            }
+
+            if (record.getModified() != null) {
+                WHERE("modified = #{modified}");
+            }
+
+            if (record.getIs_cloud() != null) {
+                WHERE("is_cloud = #{is_cloud}");
+            }
+
+            if (record.getEmail() != null) {
+                WHERE("email = #{email}");
+            }
+
+            if (record.getAvistar() != null) {
+                WHERE("avistar = #{avistar}");
+            }
+        }}.toString();
+
+
+
+        return sql;
+    }
 }

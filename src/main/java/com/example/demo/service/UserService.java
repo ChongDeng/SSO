@@ -7,7 +7,9 @@ import com.example.demo.entity.User;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.util.BeanHelper;
 import com.example.demo.util.HashUtil;
+import com.example.demo.util.JwtHelper;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +19,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 
@@ -34,8 +38,8 @@ public class UserService {
     @Value("${domain.name}")
     private String domain_name;
 
-    @Value("${file.path}")
-    private String imgPrefix;
+    @Value("${image.url_prefix}")
+    private String ImageUrlPrefix;
 
     @Autowired
     private FileService fileService;
@@ -72,6 +76,58 @@ public class UserService {
         }
         return user;
     }
+
+    public List<User> getUserByQuery(User user) {
+        List<User> users = userMapper.select(user);
+        users.forEach(u -> {
+            u.setAvistar(ImageUrlPrefix + u.getAvistar());
+        });
+        return users;
+    }
+
+    private User getUserByEmail(String email) {
+        User user = new User();
+        user.setEmail(email);
+        List<User> list = getUserByQuery(user);
+        if (!list.isEmpty()) {
+            return list.get(0);
+        }
+        throw new UserException(UserException.Type.USER_NOT_FOUND,"User not found for " + email);
+    }
+
+    public User getLoginedUserByToken(String token) {
+        Map<String, String> claims = null;
+
+        try {
+            claims = JwtHelper.verifyToken(token);
+        } catch (Exception e) {
+            throw new UserException(UserException.Type.USER_NOT_LOGIN,"User not login");
+        }
+
+        String email = claims.get("email");
+
+        System.out.println("got email: " + email);
+
+        Long expired = redisTemplate.getExpire(email);
+        if (expired > 0L) {
+
+            //在redis中更新token的过期时间： 因为本函数是验证token，所以一旦验证成功，就更新tokden过期时间
+            renewToken(token, email);
+
+            User user = getUserByEmail(email);
+            //user.setToken(token);
+            return user;
+        }
+        throw new UserException(UserException.Type.USER_NOT_LOGIN,"user not login");
+    }
+
+    //在redis中更新token的过期时间
+    private String renewToken(String token, String email) {
+        redisTemplate.opsForValue().set(email, token);
+        redisTemplate.expire(email, 30, TimeUnit.MINUTES);
+        return token;
+    }
+
 
     /**
      * 1 注册
@@ -145,5 +201,60 @@ public class UserService {
 
         //问题：需要删除redis中的key吗？？？
         return true;
+    }
+
+    //2 登录/鉴权
+    /**
+     * 校验用户名密码、生成token并返回用户对象
+     * @param email
+     * @param passwd
+     * @return
+     */
+    public User auth(String email, String passwd) {
+        if (StringUtils.isBlank(email) || StringUtils.isBlank(passwd)) {
+            throw new UserException(UserException.Type.USER_AUTH_FAIL,"User Auth Fail");
+        }
+
+        User user = new User();
+        user.setEmail(email);
+        user.setStatus(1); //因为只查询已被激活的用户。 对非激活的用户不关心
+
+        List<User> list =  getUserByQuery(user);
+        if (!list.isEmpty()) {
+            User retUser = list.get(0);
+
+            try {
+                if(HashUtil.getHashSSHA(retUser.getSalt(), passwd).equals(retUser.getPassword()))
+                {
+                    onLogin(retUser); //用来在登录成功后生成token
+                    return retUser;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        throw new UserException(UserException.Type.USER_AUTH_FAIL,"User Auth Fail");
+    }
+
+    //用来在登录成功后生成token
+    private void onLogin(User user) {
+        //将email，name和ts写入claims， 然后根据该claims生成token
+        String token =  JwtHelper.genToken(ImmutableMap.of("email", user.getEmail(), "name", user.getLogin_name(),"ts", Instant.now().getEpochSecond()+""));
+        System.out.println("token is: " + token);
+
+        //在redis中更新token的过期时间
+        renewToken(token, user.getEmail());
+        //user.setToken(token);
+    }
+
+    //3 密码重置
+
+    //4 修改用户信息
+
+    //log out
+    public void invalidate(String token) {
+        Map<String, String> claims = JwtHelper.verifyToken(token);
+        redisTemplate.delete(claims.get("email"));
     }
 }
