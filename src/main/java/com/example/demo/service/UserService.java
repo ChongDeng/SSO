@@ -2,12 +2,14 @@ package com.example.demo.service;
 
 
 import com.alibaba.fastjson.JSON;
+import com.example.demo.common.UserException;
 import com.example.demo.entity.User;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.util.BeanHelper;
 import com.example.demo.util.HashUtil;
 import com.google.common.base.Strings;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -76,6 +78,11 @@ public class UserService {
      * @param user
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
+    /*
+    * 在@Transactional注解中如果不配置rollbackFor属性,那么事物只会在遇到RuntimeException的时候才会回滚,
+    * 加上rollbackFor=Exception.class,可以让事物在遇到非运行时异常时也回滚
+    * */
     public boolean addAccount(User user) {
 
         try
@@ -95,7 +102,7 @@ public class UserService {
             BeanHelper.onInsert(user);
             userMapper.insert(user);
 
-            String enableUrlPrefix = domain_name;
+            String enableUrlPrefix = "http://" + domain_name + "/user/enable";
             registerNotify(user.getEmail(), enableUrlPrefix);
         }
         catch (Exception ex)
@@ -119,5 +126,24 @@ public class UserService {
 
         String content = enableUrlPrefix +"?key="+  randomKey;
         mailService.sendSimpleMail("系统激活邮件", content, email);
+    }
+
+    /**
+     * 1.3 激活用户
+     * @param key
+     */
+    public boolean enable(String key) {
+        String email = redisTemplate.opsForValue().get(key);
+        if (StringUtils.isBlank(email)) {
+            throw new UserException(UserException.Type.USER_NOT_FOUND, "无效的key");
+        }
+
+        User updateUser = new User();
+        updateUser.setEmail(email);
+        updateUser.setStatus(1);
+        userMapper.updateByEmail(updateUser);
+
+        //问题：需要删除redis中的key吗？？？
+        return true;
     }
 }

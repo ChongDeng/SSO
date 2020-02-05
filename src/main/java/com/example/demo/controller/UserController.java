@@ -15,10 +15,19 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    //----------------------注册----------------------------------
+    //----------------------1 注册----------------------------------
     @RequestMapping("add")
     public RestResponse<User> add(@RequestBody User user){
         userService.addAccount(user);
+        return RestResponse.success();
+    }
+
+    /**
+     * 1.2 激活注册用户
+     */
+    @RequestMapping("enable")
+    public RestResponse<Object> enable(String key){
+        userService.enable(key);
         return RestResponse.success();
     }
 }

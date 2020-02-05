@@ -188,4 +188,85 @@ public class UserSqlProvider {
         
         return sql.toString();
     }
+
+    public String updateByEmail(User record) {
+        SQL sql = new SQL();
+        sql.UPDATE("user");
+
+        if (record.getCompany_id() != null) {
+            sql.SET("company_id = #{company_id,jdbcType=BIGINT}");
+        }
+
+        if (record.getLogin_name() != null) {
+            sql.SET("login_name = #{login_name,jdbcType=VARCHAR}");
+        }
+
+        if (record.getPassword() != null) {
+            sql.SET("password = #{password,jdbcType=VARCHAR}");
+        }
+
+        if (record.getSalt() != null) {
+            sql.SET("salt = #{salt,jdbcType=VARCHAR}");
+        }
+
+        if (record.getFull_name() != null) {
+            sql.SET("full_name = #{full_name,jdbcType=VARCHAR}");
+        }
+
+        if (record.getDefault_project_id() != null) {
+            sql.SET("default_project_id = #{default_project_id,jdbcType=BIGINT}");
+        }
+
+        if (record.getTime_zone() != null) {
+            sql.SET("time_zone = #{time_zone,jdbcType=VARCHAR}");
+        }
+
+        if (record.getLanguage() != null) {
+            sql.SET("language = #{language,jdbcType=VARCHAR}");
+        }
+
+        if (record.getConx_chat_notification() != null) {
+            sql.SET("conx_chat_notification = #{conx_chat_notification,jdbcType=BIT}");
+        }
+
+        if (record.getEmail_notification() != null) {
+            sql.SET("email_notification = #{email_notification,jdbcType=BIT}");
+        }
+
+        if (record.getConx_cloud_user_name() != null) {
+            sql.SET("conx_cloud_user_name = #{conx_cloud_user_name,jdbcType=VARCHAR}");
+        }
+
+        if (record.getStatus() != null) {
+            sql.SET("status = #{status,jdbcType=INTEGER}");
+        }
+
+        if (record.getCreated_by() != null) {
+            sql.SET("created_by = #{created_by,jdbcType=VARCHAR}");
+        }
+
+        if (record.getCreated() != null) {
+            sql.SET("created = #{created,jdbcType=TIMESTAMP}");
+        }
+
+        if (record.getModified_by() != null) {
+            sql.SET("modified_by = #{modified_by,jdbcType=VARCHAR}");
+        }
+
+        if (record.getModified() != null) {
+            sql.SET("modified = #{modified,jdbcType=TIMESTAMP}");
+        }
+
+        if (record.getIs_cloud() != null) {
+            sql.SET("is_cloud = #{is_cloud,jdbcType=BIT}");
+        }
+
+        if (record.getAvistar() != null) {
+            sql.SET("avistar = #{avistar,jdbcType=VARCHAR}");
+        }
+
+        sql.WHERE("email = #{email,jdbcType=VARCHAR}");
+
+        return sql.toString();
+    }
 }
