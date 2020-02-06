@@ -26,11 +26,14 @@ public class IssueAttachmentService {
         entity.setIssue_record_id(IssueRecordId);
         entity.setAttachment_url(SharedUrl);
 
+        entity.setIs_disabled(false);
+
         entity.setCreator(user.getId());
         entity.setCreated(new Date());
         entity.setCreated_by(user.getLogin_name());
         entity.setModified_by(user.getLogin_name());
         entity.setModified(new Date());
+
 
         issueAttachmentMapper.insertSelective(entity);
 

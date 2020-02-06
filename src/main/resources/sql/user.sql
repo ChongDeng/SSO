@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50562
 File Encoding         : 65001
 
-Date: 2020-02-05 07:27:11
+Date: 2020-02-06 14:58:20
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -54,4 +54,4 @@ INSERT INTO `user` VALUES ('5', '2', 'musk', '2cf24dba5fb0a30e26e83b2ac5b9e29e1b
 INSERT INTO `user` VALUES ('6', '3', 'wen', '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824', 'asdfghjkls', null, null, null, null, '1', '1', null, '0', 'root', '2020-01-23 22:33:16', 'root', '2020-01-23 22:33:16', '1', '6@gmail.com', '6');
 INSERT INTO `user` VALUES ('7', '4', 'chongdeng', '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824', 'asdfghjkln', null, null, null, null, '1', '1', null, '0', 'root', '2020-01-23 22:45:38', 'root', '2020-01-23 22:45:38', '1', '7@gmail.com', '7');
 INSERT INTO `user` VALUES ('8', '2', 'huangweida', 'YTdjZTZmNDljYTIyNGQ4NzE3N2E4MmNmMWYxNjBkYWMyZTdlNDdkYnN1d2F0c3BiYmI=', 'suwatspbbb', null, null, null, null, '1', '1', null, '0', 'root', '2020-01-24 00:54:04', 'root', '2020-01-24 00:54:04', '1', '8@gmail.com', '8');
-INSERT INTO `user` VALUES ('10', '-1', 'honda', 'NTU4OGYzODAxNWYyOWI0YjNhMDVhNDEyODYxMjMxMjc0M2YyYTZhMmxublpRSENNWkU=', 'lnnZQHCMZE', null, null, null, null, '1', '1', null, '1', 'root', '2020-02-05 15:00:03', 'root', '2020-02-05 15:00:03', '0', 'f@gmail.com', null);
+INSERT INTO `user` VALUES ('10', '-1', 'honda', 'NTU4OGYzODAxNWYyOWI0YjNhMDVhNDEyODYxMjMxMjc0M2YyYTZhMmxublpRSENNWkU=', 'lnnZQHCMZE', null, null, null, null, '1', '1', null, '1', 'root', '2020-02-05 15:00:03', 'root', '2020-02-05 15:00:03', '0', 'fqyyang@gmail.com', null);
