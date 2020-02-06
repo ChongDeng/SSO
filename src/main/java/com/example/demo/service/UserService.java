@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 
 import com.alibaba.fastjson.JSON;
+import com.example.demo.common.PageParams;
 import com.example.demo.common.UserException;
 import com.example.demo.entity.User;
 import com.example.demo.mapper.UserMapper;
@@ -12,6 +13,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -77,8 +80,8 @@ public class UserService {
         return user;
     }
 
-    public List<User> getUserByQuery(User user) {
-        List<User> users = userMapper.select(user);
+    public List<User> getUsers(User user) {
+        List<User> users = userMapper.getUsers(user);
         users.forEach(u -> {
             u.setAvistar(ImageUrlPrefix + u.getAvistar());
         });
@@ -88,7 +91,7 @@ public class UserService {
     private User getUserByEmail(String email) {
         User user = new User();
         user.setEmail(email);
-        List<User> list = getUserByQuery(user);
+        List<User> list = getUsers(user);
         if (!list.isEmpty()) {
             return list.get(0);
         }
@@ -126,6 +129,12 @@ public class UserService {
         redisTemplate.opsForValue().set(email, token);
         redisTemplate.expire(email, 30, TimeUnit.MINUTES);
         return token;
+    }
+
+    public Pair<List<User>,Long> getPageUsers(PageParams pageParams) {
+        List<User> agents =  userMapper.getPageUsers(new User(),pageParams);
+        Long count  = Long.valueOf(agents.size());
+        return ImmutablePair.of(agents, count);
     }
 
 
@@ -219,7 +228,7 @@ public class UserService {
         user.setEmail(email);
         user.setStatus(1); //因为只查询已被激活的用户。 对非激活的用户不关心
 
-        List<User> list =  getUserByQuery(user);
+        List<User> list =  getUsers(user);
         if (!list.isEmpty()) {
             User retUser = list.get(0);
 

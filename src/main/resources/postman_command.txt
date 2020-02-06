@@ -25,3 +25,10 @@ http://localhost:8080/user/get?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3
 
 4 登出
 http://localhost:8080/user/logout?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJmcXlhbmdfdXNlciIsIm5hbWUiOiJob25kYSIsImV4cCI6MTU4MTAwOTk2MSwiZW1haWwiOiJmcXl5YW5nQGdtYWlsLmNvbSIsInRzIjoiMTU4MDkyMzU2MSJ9.5s0W3O2PzHQgVlugWygjLEZUHf3pWLJlPpKXAbToBpI
+
+5 测试分页1
+http://localhost:8080/user/page?limit=2&offset=3
+
+5.2 测试分页2
+
+http://localhost:8080/user/page2?pageIndex=3&pageSize=3

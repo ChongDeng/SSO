@@ -1,12 +1,17 @@
 package com.example.demo.controller;
 
+import com.example.demo.common.ListResponse;
+import com.example.demo.common.PageParams;
 import com.example.demo.common.RestResponse;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("user")
@@ -38,7 +43,7 @@ public class UserController {
         return RestResponse.success(finalUser);
     }
 
-    //------------------------2.2 鉴权：根据token返回用户信息 --------------------------
+    //------------------------2.2 鉴权：根据token返回用户信息 仅仅用于测试 --------------------------
     @RequestMapping("get")
     public RestResponse<User> getUser(String token){
         User finalUser = userService.getLoginedUserByToken(token);
@@ -50,6 +55,29 @@ public class UserController {
     public RestResponse<Object> logout(String token){
         userService.invalidate(token);
         return RestResponse.success();
+    }
+
+    //------------------------ 仅仅用来测试分页功能 --------------------------
+    @RequestMapping("page")
+    public RestResponse<ListResponse<User>> page_test1(Integer limit, Integer offset) {
+        PageParams pageParams = new PageParams();
+        pageParams.setLimit(limit);
+        pageParams.setOffset(offset);
+
+        Pair<List<User>, Long> pair = userService.getPageUsers(pageParams);
+        ListResponse<User> response = ListResponse.build(pair.getKey(), pair.getValue());
+
+        return RestResponse.success(response);
+    }
+
+    //------------------------ 仅仅用来测试分页功能 2  --------------------------
+    @RequestMapping("page2")
+    public RestResponse<ListResponse<User>> page_test2(Integer pageIndex, Integer pageSize) {
+
+        Pair<List<User>, Long> pair = userService.getPageUsers(PageParams.build(pageSize, pageIndex));
+        ListResponse<User> response = ListResponse.build(pair.getKey(), pair.getValue());
+
+        return RestResponse.success(response);
     }
 
 //    @RequestMapping("update")
