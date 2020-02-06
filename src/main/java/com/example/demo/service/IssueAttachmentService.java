@@ -5,6 +5,7 @@ import com.example.demo.entity.User;
 import com.example.demo.mapper.IssueAttachmentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Map;
@@ -15,6 +16,7 @@ public class IssueAttachmentService {
     @Autowired
     IssueAttachmentMapper issueAttachmentMapper;
 
+    @Transactional(rollbackFor = Exception.class)
     public boolean insert(User user, Long IssueId, Long IssueRecordId, String SharedUrl)
     {
         IssueAttachment entity = new IssueAttachment();

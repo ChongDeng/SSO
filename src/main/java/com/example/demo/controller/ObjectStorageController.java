@@ -1,6 +1,9 @@
 package com.example.demo.controller;
 
+import com.example.demo.common.UserException;
+import com.example.demo.entity.IssueAttachment;
 import com.example.demo.entity.User;
+import com.example.demo.service.IssueAttachmentService;
 import com.example.demo.service.StorageService;
 import com.example.demo.service.UserService;
 import org.json.JSONObject;
@@ -22,6 +25,9 @@ public class ObjectStorageController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    IssueAttachmentService issueAttachmentService;
 
     @RequestMapping("/test")
     public String test() {
@@ -72,10 +78,13 @@ public class ObjectStorageController {
 
             User user = userService.getUserById(UserId);
 
-            if(!storageService.insertIssueAttachment(user, IssueId, IssueRecordId, UrlMaps))
-            {
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
+            UrlMaps.forEach((k,v) -> {
+                if(!issueAttachmentService.insert(user, IssueId, IssueRecordId, v))
+                {
+                    throw new UserException(UserException.Type.USER_AUTH_FAIL,"User Auth Fail");
+                }
+            });
+
         }
         catch (Exception ex)
         {

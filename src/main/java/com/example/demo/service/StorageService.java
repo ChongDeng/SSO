@@ -64,18 +64,4 @@ public class StorageService {
         return NewFileName;
     }
 
-    @Transactional(rollbackFor = Exception.class)
-    public boolean insertIssueAttachment(User user, Long IssueId, Long IssueRecordId, Map<String, String> UrlMaps)
-    {
-
-        UrlMaps.forEach((k,v) -> {
-            if(!issueAttachmentService.insert(user, IssueId, IssueRecordId, v))
-            {
-                throw new UserException(UserException.Type.USER_AUTH_FAIL,"User Auth Fail");
-            }
-        });
-
-        return true;
-    }
-
 }
