@@ -1,7 +1,7 @@
 package com.example.demo.common;
 
 public enum RestCode {
-	OK(0,"ok"),
+	OK(200,"ok"),
 	UNKNOWN_ERROR(1,"未知异常"),
 	TOKEN_INVALID(2,"TOKEN失效"),
 	USER_NOT_EXIST(3,"用户不存在"),

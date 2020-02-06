@@ -20,7 +20,7 @@ public class RestResponse<T> {
 	
 	public static <T> RestResponse<T> success(T result){
 		RestResponse response = new RestResponse<T>();
-		response.setResult(result);
+		response.setData(result);
 		return response;
 	}
 	
@@ -28,25 +28,25 @@ public class RestResponse<T> {
 		return new RestResponse<T>(code.code,code.msg);
 	}
 
-	public int getCode() {
+	public int getErrCode() {
 		return code;
 	}
-	public void setCode(int code) {
+	public void setErrCode(int code) {
 		this.code = code;
 	}
-	public String getMsg() {
+	public String getErrMsg() {
 		return msg;
 	}
-	public void setMsg(String msg) {
+	public void setErrMsg(String msg) {
 		this.msg = msg;
 	}
-	public T getResult() {
+	public T getData() {
 		return result;
 	}
-	public void setResult(T result) {
+	public void setData(T result) {
 		this.result = result;
 	}
-	
-	
+
+
 
 }
