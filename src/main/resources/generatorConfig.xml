@@ -46,6 +46,17 @@
                 <property name="useActualColumnNames" value="true" />
         </table>
 
+        <table tableName="issue_attachment"
+               domainObjectName="IssueAttachment"
+               enableCountByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               selectByExampleQueryId="false">
+            <!-- 是否使用真实字段名，设置为false将自动驼峰转换 -->
+            <property name="useActualColumnNames" value="true" />
+        </table>
+
     </context>
 </generatorConfiguration>
 
