@@ -1,0 +1,5 @@
+mybatis自动生成了比较好但还不完善的updateByPrimaryKeySelective， 但是:
+
+1 没有很好的remove  => solution: 请参考我实现的IssueAttachmentSqlProvider中的 remove(IssueAttachment record) 方法
+
+2 没有很好的query   => solution:  请参考我实现的UserSqlProvider中的getUsers(User record)方法和getPageUsers(User record, PageParams pageParams)方法

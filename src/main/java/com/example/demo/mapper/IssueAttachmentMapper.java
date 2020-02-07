@@ -111,4 +111,11 @@ public interface IssueAttachmentMapper {
         "where id = #{id,jdbcType=BIGINT}"
     })
     int updateByPrimaryKey(IssueAttachment record);
+
+    @Update({
+            "update issue_attachment",
+            "set is_disabled = #{is_disabled,jdbcType=BIT}",
+            "where creator = #{UserId} and issue_id = #{IssueId} and issue_record_id = #{IssueRecordId} and attachment_url = #{SharedUrl}"
+    })
+    int setStatus(@Param("UserId") Long UserId, @Param("IssueId") Long IssueId, @Param("IssueRecordId") Long IssueRecordId, @Param("SharedUrl") String SharedUrl, @Param("is_disabled") Boolean is_disabled);
 }

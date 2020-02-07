@@ -38,3 +38,6 @@ http://localhost:8080/user/page2?pageIndex=3&pageSize=3
 
  curl -i -X POST -H 'Content-type:multipart/form-data' -F "file=@C:\Users\fqyya\Desktop\dc.PNG"  -F "file=@C:\Users\fqyya\Desktop\Octocat.png"  -F "msg={\"user_id\":1,\"issue_id\":2,\"record_id\":3}" http://localhost:8080/storage/upload
 
+
+7 删除/disable issue attachment
+

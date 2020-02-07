@@ -130,7 +130,8 @@ public class ObjectStorageController {
 
         User user = userService.getUserById(UserId);
 
-        if(!issueAttachmentService.remove(user, IssueId, IssueRecordId, Url))
+        //if(!issueAttachmentService.remove(user, IssueId, IssueRecordId, Url))
+        if(!issueAttachmentService.disable(user, IssueId, IssueRecordId, Url))
         {
             throw new UserException(UserException.Type.USER_AUTH_FAIL,"User Auth Fail");
         }

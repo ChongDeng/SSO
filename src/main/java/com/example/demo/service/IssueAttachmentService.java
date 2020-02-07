@@ -55,4 +55,11 @@ public class IssueAttachmentService {
 
         return true;
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    public boolean disable(User user, Long IssueId, Long IssueRecordId, String SharedUrl)
+    {
+        issueAttachmentMapper.setStatus(user.getId(), IssueId, IssueRecordId, SharedUrl, true);
+        return true;
+    }
 }
