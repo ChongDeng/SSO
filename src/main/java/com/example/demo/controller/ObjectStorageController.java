@@ -1,11 +1,13 @@
 package com.example.demo.controller;
 
+import com.example.demo.common.RestResponse;
 import com.example.demo.common.UserException;
 import com.example.demo.entity.IssueAttachment;
 import com.example.demo.entity.User;
 import com.example.demo.service.IssueAttachmentService;
 import com.example.demo.service.StorageService;
 import com.example.demo.service.UserService;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -95,6 +97,45 @@ public class ObjectStorageController {
 
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    //------------------------ delete drive file --------------------------
+    //client: curl -d {\"user_id\":1,\"issue_id\":2,\"record_id\":3,\"url\":\"http://127.0.0.1:8080/storage/dc.PNG_OWBwzy-dd6bc47f-25db-463a-a290-94d31ea7e782\"} -H "Content-Type: application/json" http://localhost:8080/storage/remove
+    @RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public RestResponse remove(@RequestBody String payload) {
+
+        JSONObject result = null;
+        try {
+            result = new JSONObject(payload);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if(result == null) {
+            throw new UserException(UserException.Type.USER_AUTH_FAIL,"User Auth Fail");
+        }
+
+        String Url = null;
+        Long UserId = null;
+        Long IssueId = null;
+        Long IssueRecordId = null;
+        try {
+            Url = result.getString("url");
+            UserId =  result.getLong("user_id");
+            IssueId = result.getLong("issue_id");
+            IssueRecordId = result.getLong("record_id");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        User user = userService.getUserById(UserId);
+
+        if(!issueAttachmentService.remove(user, IssueId, IssueRecordId, Url))
+        {
+            throw new UserException(UserException.Type.USER_AUTH_FAIL,"User Auth Fail");
+        }
+
+        return RestResponse.success();
     }
 
 }

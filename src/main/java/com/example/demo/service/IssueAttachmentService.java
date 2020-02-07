@@ -39,4 +39,20 @@ public class IssueAttachmentService {
 
         return true;
     }
+
+
+    @Transactional(rollbackFor = Exception.class)
+    public boolean remove(User user, Long IssueId, Long IssueRecordId, String SharedUrl)
+    {
+        IssueAttachment entity = new IssueAttachment();
+
+        entity.setCreator(user.getId());
+        entity.setIssue_id(IssueId);
+        entity.setIssue_record_id(IssueRecordId);
+        entity.setAttachment_url(SharedUrl);
+
+        issueAttachmentMapper.remove(entity);
+
+        return true;
+    }
 }
