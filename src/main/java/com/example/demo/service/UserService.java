@@ -183,6 +183,7 @@ public class UserService {
      * @param email
      * @param enableUrlPrefix
      */
+    @Async
     private void registerNotify(String email, String enableUrlPrefix) {
         String randomKey = HashUtil.hashString(email) + RandomStringUtils.randomAlphabetic(10);
 
@@ -214,7 +215,7 @@ public class UserService {
 
     //2 登录/鉴权
     /**
-     * 校验用户名密码、生成token并返回用户对象
+     * 校验用户名密码、生成token并返回{用户对象, token}
      * @param email
      * @param passwd
      * @return

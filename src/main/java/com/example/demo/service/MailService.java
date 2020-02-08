@@ -16,12 +16,20 @@ public class MailService {
     private String from;
 
     public void sendSimpleMail(String subject,String content,String toEmail){
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(from);
-        message.setTo(toEmail);
-        message.setSubject(subject);
-        message.setText(content);
-        mailSender.send(message);
+        try
+        {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(from);
+            message.setTo(toEmail);
+            message.setSubject(subject);
+            message.setText(content);
+            mailSender.send(message);
+        }
+        catch(Exception ex)
+        {
+            int dummy = 0;
+        }
+
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.annotation.PassToken;
 import com.example.demo.common.*;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
@@ -37,6 +38,7 @@ public class UserController {
     }
 
     //------------------------2 登录: 返回生成的token --------------------------
+    @PassToken
     @RequestMapping("auth")
     public RestResponse<SignInResponse> auth(@RequestBody User user){
 
@@ -58,6 +60,7 @@ public class UserController {
     }
 
     //------------------------ log out --------------------------
+    @PassToken
     @RequestMapping("logout")
     public RestResponse<Object> logout(String token){
         userService.invalidate(token);
