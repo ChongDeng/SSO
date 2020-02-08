@@ -219,7 +219,7 @@ public class UserService {
      * @param passwd
      * @return
      */
-    public User auth(String email, String passwd) {
+    public Pair<User, String> auth(String email, String passwd) {
         if (StringUtils.isBlank(email) || StringUtils.isBlank(passwd)) {
             throw new UserException(UserException.Type.USER_AUTH_FAIL,"User Auth Fail");
         }
@@ -235,8 +235,8 @@ public class UserService {
             try {
                 if(HashUtil.getHashSSHA(retUser.getSalt(), passwd).equals(retUser.getPassword()))
                 {
-                    onLogin(retUser); //用来在登录成功后生成token
-                    return retUser;
+                    String token = onLogin(retUser); //用来在登录成功后生成token
+                    return ImmutablePair.of(retUser, token);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -246,15 +246,16 @@ public class UserService {
         throw new UserException(UserException.Type.USER_AUTH_FAIL,"User Auth Fail");
     }
 
-    //用来在登录成功后生成token
-    private void onLogin(User user) {
+    //用来在登录成功后生成token, 并返回token
+    private String onLogin(User user) {
         //将email，name和ts写入claims， 然后根据该claims生成token
         String token =  JwtHelper.genToken(ImmutableMap.of("email", user.getEmail(), "name", user.getLogin_name(),"ts", Instant.now().getEpochSecond()+""));
-        System.out.println("token is: " + token);
+        System.out.println("=================  token is: " + token);
 
         //在redis中更新token的过期时间
         renewToken(token, user.getEmail());
         //user.setToken(token);
+        return token;
     }
 
     //3 密码重置

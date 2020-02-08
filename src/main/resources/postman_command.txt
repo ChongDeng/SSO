@@ -1,5 +1,5 @@
 1 注册
-http://localhost:8080/user/add
+http://localhost:8080/user/register
 
 {
 	"login_name":"honda",

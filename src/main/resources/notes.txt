@@ -21,3 +21,29 @@ mybatis自动生成了:
 ### SQL: INSERT INTO issue_attachment  (from_id, issue_id, attachment_url, creator, from_type) VALUES (?, ?, ?, ?, ?)
 ### Cause: java.sql.SQLException: Field 'created_by' doesn't have a default value
 ; Field 'created_by' doesn't have a default value
+
+
+redis的使用：
+    1 注册的时候：key为随机key, 值为email
+
+    2 登录的时候：key为email, 值为token; 并在redis中更新token的过期时间
+    3 退出的时候：删除key为email的键值对
+
+    4 缓存用户的信息，以减少数据库压力：
+        * 1.首先通过缓存获取
+        * 2.不存在将从通过数据库获取用户对象
+        * 3.将用户对象的json字符串写入缓存，设置缓存时间5分钟： key为"user:"+id，val为User对象的序列化字符串
+        * 4.返回对象
+        "public User getUserById(Long id)"
+
+JWT的使用：
+  第一步：
+      成功登录时：
+            首先，根据username和email生成token
+            然后，将email和token存入redis: key为email, 值为token; 并在redis中更新token的过期时间
+  第二步：
+       调用api时：
+            首先鉴权，
+            鉴权通过后，根据"public User getLoginedUserByToken(String token)"来获取用户信息:
+               从token解码得到email =>
+                    再从email查询数据库（User getUserByEmail(String email)）得到用户信息; 并在redis中更新token的过期时间

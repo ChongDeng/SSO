@@ -1,8 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.common.ListResponse;
-import com.example.demo.common.PageParams;
-import com.example.demo.common.RestResponse;
+import com.example.demo.common.*;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
 import org.apache.commons.lang3.tuple.Pair;
@@ -21,9 +19,11 @@ public class UserController {
     UserService userService;
 
     //----------------------1 注册----------------------------------
-    @RequestMapping("add")
-    public RestResponse<User> add(@RequestBody User user){
-        userService.addAccount(user);
+    @RequestMapping("register")
+    public RestResponse<User> register(@RequestBody User user){
+        if(!userService.addAccount(user))
+            return RestResponse.error(RestCode.REGISTER_FAILURE);
+
         return RestResponse.success();
     }
 
@@ -38,9 +38,16 @@ public class UserController {
 
     //------------------------2 登录: 返回生成的token --------------------------
     @RequestMapping("auth")
-    public RestResponse<User> auth(@RequestBody User user){
-        User finalUser = userService.auth(user.getEmail(),user.getPassword());
-        return RestResponse.success(finalUser);
+    public RestResponse<SignInResponse> auth(@RequestBody User user){
+
+        Pair<User, String> pair = userService.auth(user.getEmail(),user.getPassword());
+
+        User entity = pair.getKey();
+        entity.setPassword("");
+        entity.setSalt("");
+
+        SignInResponse signInResponse =  new SignInResponse(entity, pair.getValue());
+        return RestResponse.success(signInResponse);
     }
 
     //------------------------2.2 鉴权：根据token返回用户信息 仅仅用于测试 --------------------------

@@ -10,6 +10,7 @@ public enum RestCode {
 	LACK_PARAMS(10101,"缺少参数"),
 
 	//for user
+	REGISTER_FAILURE(1,"register failure"),
 	TOKEN_INVALID(2,"TOKEN失效"),
 	USER_NOT_EXIST(3,"用户不存在"),
 

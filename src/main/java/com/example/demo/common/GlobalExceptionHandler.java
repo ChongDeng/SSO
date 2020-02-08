@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
-public class GlobalExceptionHanlder {
+public class GlobalExceptionHandler {
 //  
 //    @Autowired
 //    private Tracer tracer;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHanlder.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 	
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(value = Throwable.class)
