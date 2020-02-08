@@ -25,7 +25,12 @@ public class UserException extends RuntimeException implements WithTypeException
 
   
   public enum Type{
-    WRONG_PAGE_NUM,LACK_PARAMTER,USER_NOT_LOGIN,USER_NOT_FOUND,USER_AUTH_FAIL;
+    WRONG_PAGE_NUM,
+    LACK_PARAMTER,
+
+    USER_NOT_LOGIN,
+    USER_NOT_FOUND,
+    USER_AUTH_FAIL;
   }
 
 }

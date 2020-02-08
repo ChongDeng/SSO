@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.Map;
+import java.util.List;
 
 @Service("IssueAttachmentService")
 public class IssueAttachmentService {
@@ -16,50 +16,60 @@ public class IssueAttachmentService {
     @Autowired
     IssueAttachmentMapper issueAttachmentMapper;
 
+
+    @Autowired
+    UserService userService;
+
     @Transactional(rollbackFor = Exception.class)
-    public boolean insert(User user, Long IssueId, Long IssueRecordId, String SharedUrl)
+    public boolean insert(IssueAttachment entity)
     {
-        IssueAttachment entity = new IssueAttachment();
+        try
+        {
+            User user = userService.getUserById(entity.getCreator());
 
+            entity.setModified_by(user.getLogin_name());
+            entity.setModified(new Date());
+            entity.setCreated_by(user.getLogin_name());
+            entity.setCreated(new Date());
+            entity.setStatus(0);
 
-        entity.setIssue_id(IssueId);
-        entity.setIssue_record_id(IssueRecordId);
-        entity.setAttachment_url(SharedUrl);
-
-        entity.setIs_disabled(false);
-
-        entity.setCreator(user.getId());
-        entity.setCreated(new Date());
-        entity.setCreated_by(user.getLogin_name());
-        entity.setModified_by(user.getLogin_name());
-        entity.setModified(new Date());
-
-
-        issueAttachmentMapper.insertSelective(entity);
+            issueAttachmentMapper.insertSelective(entity);
+        }
+        catch(Exception ex)
+        {
+            return false;
+        }
 
         return true;
     }
 
 
     @Transactional(rollbackFor = Exception.class)
-    public boolean remove(User user, Long IssueId, Long IssueRecordId, String SharedUrl)
+    public boolean remove_logical(IssueAttachment issueAttachment)
     {
-        IssueAttachment entity = new IssueAttachment();
+        User user = userService.getUserById(issueAttachment.getCreator());
 
-        entity.setCreator(user.getId());
-        entity.setIssue_id(IssueId);
-        entity.setIssue_record_id(IssueRecordId);
-        entity.setAttachment_url(SharedUrl);
+        //1 means disable
+        issueAttachment.setStatus(1);
+        issueAttachment.setModified(new Date());
+        issueAttachment.setModified_by(user.getLogin_name());
 
-        issueAttachmentMapper.remove(entity);
-
+        issueAttachmentMapper.setStatus(issueAttachment);
         return true;
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public boolean disable(User user, Long IssueId, Long IssueRecordId, String SharedUrl)
+    public boolean remove_phisics(IssueAttachment issueAttachment)
     {
-        issueAttachmentMapper.setStatus(user.getId(), IssueId, IssueRecordId, SharedUrl, true);
+        issueAttachmentMapper.remove(issueAttachment);
         return true;
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    public List<IssueAttachment> getItems(IssueAttachment issueAttachment)
+    {
+        return issueAttachmentMapper.getItems(issueAttachment);
+    }
+
+
 }

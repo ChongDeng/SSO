@@ -1,5 +1,23 @@
-mybatis自动生成了比较好但还不完善的updateByPrimaryKeySelective， 但是:
+mybatis自动生成了:
+    1 非常完美的insertSelective
+    2 比较好但还不完善的updateByPrimaryKeySelective（因为它是根据where id = ?）:
+          感觉没办法完美解决了,只有在mapper中写sql了
 
-1 没有很好的remove  => solution: 请参考我实现的IssueAttachmentSqlProvider中的 remove(IssueAttachment record) 方法
+ 但是:
 
-2 没有很好的query   => solution:  请参考我实现的UserSqlProvider中的getUsers(User record)方法和getPageUsers(User record, PageParams pageParams)方法
+    3 没有很好的remove  => solution: 请参考我实现的IssueAttachmentSqlProvider中的 remove(IssueAttachment record) 方法
+
+    4 没有很好的query   => solution:  请参考我实现的UserSqlProvider中的getUsers(User record)方法和getPageUsers(User record, PageParams pageParams)方法
+
+
+遇到的问题：
+1 插入时，如果类设置的属性里缺少数据表的not null字段，会抛出异常，
+  例如执行ssueAttachmentMapper.insertSelective(entity)时：
+
+
+### Error updating database.  Cause: java.sql.SQLException: Field 'created_by' doesn't have a default value
+### The error may involve com.example.demo.mapper.IssueAttachmentMapper.insertSelective-Inline
+### The error occurred while setting parameters
+### SQL: INSERT INTO issue_attachment  (from_id, issue_id, attachment_url, creator, from_type) VALUES (?, ?, ?, ?, ?)
+### Cause: java.sql.SQLException: Field 'created_by' doesn't have a default value
+; Field 'created_by' doesn't have a default value

@@ -19,12 +19,13 @@ http://localhost:8080/user/auth
 	"password":"honda",
 	"email":"fqyyang@gmail.com"}
 
-4 鉴权
+4 鉴权(仅仅是测试，不能用于生产环境)
 http://localhost:8080/user/get?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJmcXlhbmdfdXNlciIsIm5hbWUiOiJob25kYSIsImV4cCI6MTU4MTAwODg0OSwiZW1haWwiOiJmcXl5YW5nQGdtYWlsLmNvbSIsInRzIjoiMTU4MDkyMjQ0OSJ9.LfKB3XD-MFauJ-0VRz5Q4UUDKpJvFDzoEnDK94tyae0
 
 
 4 登出
 http://localhost:8080/user/logout?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJmcXlhbmdfdXNlciIsIm5hbWUiOiJob25kYSIsImV4cCI6MTU4MTAwOTk2MSwiZW1haWwiOiJmcXl5YW5nQGdtYWlsLmNvbSIsInRzIjoiMTU4MDkyMzU2MSJ9.5s0W3O2PzHQgVlugWygjLEZUHf3pWLJlPpKXAbToBpI
+
 
 5 测试分页1
 http://localhost:8080/user/page?limit=2&offset=3
@@ -34,10 +35,77 @@ http://localhost:8080/user/page?limit=2&offset=3
 http://localhost:8080/user/page2?pageIndex=3&pageSize=3
 
 
-6 添加issue attachment
+6 上传文件：
 
- curl -i -X POST -H 'Content-type:multipart/form-data' -F "file=@C:\Users\fqyya\Desktop\dc.PNG"  -F "file=@C:\Users\fqyya\Desktop\Octocat.png"  -F "msg={\"user_id\":1,\"issue_id\":2,\"record_id\":3}" http://localhost:8080/storage/upload
+ curl -i -X POST -H 'Content-type:multipart/form-data' -F "file=@C:\Users\fqyya\Desktop\dc.PNG"  http://localhost:8080/storage/upload
+
+6.2 删除云文件：
+
+ curl http://localhost:8080/storage/remove?url=http://127.0.0.1:8080/storage/dc.PNG_BrkabK-13689c7b-adff-4ceb-b850-eab8fab9de1b
 
 
-7 删除/disable issue attachment
+
+7 插入issue attachment
+
+ （1） 插入issue comment attachment:
+
+    http://localhost:8080/issue_attachment/insert
+
+    {
+    	"creator": 1,
+    	"issue_id": 1,
+    	"from_id": 2,
+    	"from_type": 0,
+    	"attachment_url": "http://127.0.0.1:8080/storage/dc.PNG_BrkabK-13689c7b-adff-4ceb-b850-eab8fab9de1b"
+    }
+
+
+
+  (2)  插入meeting attachment:
+
+        http://localhost:8080/issue_attachment/insert
+
+        {
+        	"creator": 1,
+        	"issue_id": 1,
+        	"from_id": 2,
+        	"from_type": 1,
+        	"attachment_url": "http://127.0.0.1:8080/storage/dc.PNG_BrkabK-13689c7b-adff-4ceb-b850-eab8fab9de1b"
+        }
+
+
+7.2 删除 issue attachment
+
+    http://localhost:8080/issue_attachment/remove
+
+    {
+    	"creator": 1,
+    	"issue_id": 1,
+    	"from_id": 2,
+    	"from_type": 1,
+    	"attachment_url": "http://127.0.0.1:8080/storage/dc.PNG_BrkabK-13689c7b-adff-4ceb-b850-eab8fab9de1b"
+    }
+
+
+7.3 查询 issue
+
+  查询通过issue id或者from_id查询：
+
+  (1) 参数： issue id + from_id + from_type
+  http://localhost:8080/issue_attachment/query
+
+      {
+      	"creator": 1,
+      	"issue_id": 1,
+      	"from_id": 2,
+      	"from_type": 1
+      }
+
+  (2) 参数：issue id
+   http://localhost:8080/issue_attachment/query
+
+        {
+        	"creator": 1,
+        	"issue_id": 1
+        }
 

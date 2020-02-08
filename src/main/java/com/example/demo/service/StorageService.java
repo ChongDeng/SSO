@@ -1,17 +1,12 @@
 package com.example.demo.service;
 
-import com.example.demo.common.UserException;
-import com.example.demo.entity.User;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.Map;
 import java.util.UUID;
 
 @Service("StorageService")
@@ -22,9 +17,6 @@ public class StorageService {
 
     @Value("${object.storage.url.prefix}")
     private String UrlPrefix;
-
-    @Autowired
-    IssueAttachmentService issueAttachmentService;
 
     //return name of stored file
     public String saveToS3(MultipartFile UploadedFile) throws Exception {
@@ -62,6 +54,29 @@ public class StorageService {
         }
 
         return NewFileName;
+    }
+
+    public boolean removeS3File(String FileUrl)
+    {
+        try
+        {
+            if(!FileUrl.startsWith(UrlPrefix))
+            {
+               return false;
+            }
+
+            String FileName = FileUrl.substring(UrlPrefix.length());
+            File TargetFile = new File(S3MapFolder + FileName);
+
+            if(!TargetFile.delete()) return false;
+
+        }
+        catch (Exception ex)
+        {
+            return false;
+        }
+
+        return true;
     }
 
 }
