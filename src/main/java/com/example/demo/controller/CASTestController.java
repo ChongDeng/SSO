@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 
+import com.example.demo.annotation.PassToken;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 //@RequestMapping("cas")
 public class CASTestController {
 
+    @PassToken
     @RequestMapping("/")
     public String index() {
         return "访问了首页哦";
@@ -19,6 +21,7 @@ public class CASTestController {
         return "已登录";
     }
 
+    @PassToken
     @RequestMapping("/logout")
     public String logout() {
         return "已退出";

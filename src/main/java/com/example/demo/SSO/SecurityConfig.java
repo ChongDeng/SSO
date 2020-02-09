@@ -40,8 +40,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()//配置安全策略
-                    .antMatchers("/").authenticated()//定义/请求不需要验证
-                    .anyRequest().permitAll()//其余的所有请求都需要验证
+                    .antMatchers("/").authenticated()//定义/请求需要验证
+                    .anyRequest().permitAll()//其余的所有请求都不需要验证：因为已经有JWT的header token拦截了。
                     .and()
                 .logout()
                     .permitAll()//定义logout不需要验证

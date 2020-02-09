@@ -48,12 +48,6 @@ JWT的使用：
                从token解码得到email =>
                     再从email查询数据库（User getUserByEmail(String email)）得到用户信息; 并在redis中更新token的过期时间
 
-
-
-如果邮箱密码配置错误，函数registerNotify(String email, String enableUrlPrefix)会hang很长时间，即使该函数已经设置为Async函数
-
-
-
 设置JWT的方法：
     第一步： 添加PassToken和UserLoginToken
     第二步： 添加拦截器AuthenticationInterceptor, 用于获取并验证请求中header的token
@@ -66,12 +60,27 @@ JWT的使用：
 
                      注销
                      @PassToken
-                     @RequestMapping("auth")
-                     public RestResponse<SignInResponse> auth(@RequestBody User user){
+                     @RequestMapping("logout")
+                     public RestResponse<Object> logout(String token){
 
 
     第五步：然后就可以测试了：
          在header中设置键值对：“token:xxx”
 
-    第六步： 如果后面为了快速调试而像关掉token验证的话，只需要把InterceptorConfig类中的
-             addInterceptors(InterceptorRegistry registry)的方法体设为空
+    第六步： 如果后面为了快速调试而想关掉token验证的话，只需要把InterceptorConfig类中的
+             addInterceptors(InterceptorRegistry registry)的方法体注释为空
+
+
+CAS的使用：
+    第一步： 添加包SSO
+    第二步： 添加CASTestController
+    第三步： 可以使用了
+
+    第四步：如果为了快速开发测试，而想关掉CAS的话，只需要下面两步：
+                （1） 将SecurityConfig类中的configure(AuthenticationManagerBuilder auth)方法的函数体只保留第一行
+                （2） SecurityConfig类中的configure(HttpSecurity http)方法的第二行注释掉
+
+
+如果邮箱密码配置错误，函数registerNotify(String email, String enableUrlPrefix)会hang很长时间，即使该函数已经设置为Async函数
+
+
