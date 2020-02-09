@@ -98,6 +98,7 @@ public class UserService {
         throw new UserException(UserException.Type.USER_NOT_FOUND,"User not found for " + email);
     }
 
+
     public User getLoginedUserByToken(String token) {
         Map<String, String> claims = null;
 
@@ -178,6 +179,54 @@ public class UserService {
         return true;
     }
 
+
+    /**
+     * 1.2 注册: 当cas登录成功后，把数据插入到数据库
+     * @param user
+     * @return
+     */
+    //@Async
+    @Transactional(rollbackFor = Exception.class)
+    /*
+    * 在@Transactional注解中如果不配置rollbackFor属性,那么事物只会在遇到RuntimeException的时候才会回滚,
+    * 加上rollbackFor=Exception.class,可以让事物在遇到非运行时异常时也回滚
+    * */
+    public boolean insertCasUser(User user) {
+
+        try
+        {
+            if(user == null) return false;
+
+            List<User> result = userMapper.getUsers(user);
+            if(result != null && !result.isEmpty())
+            {
+                System.out.println("user " + user.getEmail() + " already exists.");
+                return true;
+            }
+
+            List<String> encypted_info = HashUtil.hashSSHA("123456");
+            user.setSalt(encypted_info.get(0));
+            user.setPassword(encypted_info.get(1));
+
+            user.setCompany_id(-1L);
+            user.setConx_chat_notification(true);
+            user.setEmail_notification(true);
+            user.setStatus(1);
+            user.setCreated_by("root");
+            user.setModified_by("root");
+            user.setIs_cloud(true);
+
+            BeanHelper.onInsert(user);
+            userMapper.insert(user);
+        }
+        catch (Exception ex)
+        {
+            System.out.println("exception ex: " + ex.getMessage());
+            return false;
+        }
+        return true;
+    }
+
     /**
      * 1.2 发送注册激活邮件
      * @param email
@@ -248,7 +297,7 @@ public class UserService {
     }
 
     //用来在登录成功后生成token, 并返回token
-    private String onLogin(User user) {
+    public String onLogin(User user) {
         //将email，name和ts写入claims， 然后根据该claims生成token
         String token =  JwtHelper.genToken(ImmutableMap.of("email", user.getEmail(), "name", user.getLogin_name(),"ts", Instant.now().getEpochSecond()+""));
         System.out.println("=================  token is: " + token);
