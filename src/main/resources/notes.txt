@@ -1,8 +1,9 @@
 mybatis自动生成了:
     1 非常完美的insertSelective
     2 比较好但还不完善的updateByPrimaryKeySelective（因为它是根据where id = ?）:
-          感觉没办法完美解决了,只有在mapper中写sql了
-
+          感觉没办法完美解决了：
+                （1）只有在mapper中写sql了
+                （2）或者像在UserSqlProvider类中实现updateByEmail(User record)方法那样
  但是:
 
     3 没有很好的remove  => solution: 请参考我实现的IssueAttachmentSqlProvider中的 remove(IssueAttachment record) 方法

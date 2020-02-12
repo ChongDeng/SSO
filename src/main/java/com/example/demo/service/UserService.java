@@ -50,13 +50,12 @@ public class UserService {
     @Autowired
     private MailService mailService;
 
+
     /**
      * 1.首先通过缓存获取
      * 2.不存在将从通过数据库获取用户对象
      * 3.将用户对象写入缓存，设置缓存时间5分钟
      * 4.返回对象
-     * @param id
-     * @return
      */
     public User getUserById(Long id) {
 
@@ -95,7 +94,8 @@ public class UserService {
         if (!list.isEmpty()) {
             return list.get(0);
         }
-        throw new UserException(UserException.Type.USER_NOT_FOUND,"User not found for " + email);
+
+        return null;
     }
 
 
@@ -151,6 +151,14 @@ public class UserService {
     * */
     public boolean addAccount(User user) {
 
+        if(user.getEmail() == null) return false;
+
+        if(getUserByEmail(user.getEmail()) != null)
+        {
+            System.out.println("user " + user.getEmail() +  " already exists.");
+            return false;
+        }
+
         try
         {
             List<String> encypted_info = HashUtil.hashSSHA(user.getPassword());
@@ -201,6 +209,7 @@ public class UserService {
             if(result != null && !result.isEmpty())
             {
                 System.out.println("user " + user.getEmail() + " already exists.");
+                //notes: 不需要更新用户表，因为是用的CAS登录，所以直接返回就可以用了。
                 return true;
             }
 
@@ -283,11 +292,19 @@ public class UserService {
             User retUser = list.get(0);
 
             try {
+                String res = HashUtil.getHashSSHA(retUser.getSalt(), passwd);
                 if(HashUtil.getHashSSHA(retUser.getSalt(), passwd).equals(retUser.getPassword()))
                 {
                     String token = onLogin(retUser); //用来在登录成功后生成token
+
+                    //以保密的形式返回给客户端
+                    retUser.setPassword("***");
+                    retUser.setSalt("***");
+
                     return ImmutablePair.of(retUser, token);
                 }
+                else
+                    throw new UserException(UserException.Type.USER_AUTH_FAIL,"Password is wrong");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -309,8 +326,74 @@ public class UserService {
     }
 
     //3 密码重置
+    //step 1: 发送重置密码的邮件
+    @Async
+    public void resetNotify(String email, String reset_url_suffix) {
+
+        //step 1: 设置redis
+        String randomKey = "reset_" + RandomStringUtils.randomAlphabetic(10);
+        redisTemplate.opsForValue().set(randomKey, email);
+        redisTemplate.expire(randomKey, 1,TimeUnit.HOURS);
+
+        //step 2: 发送重置密码邮件
+        String content = domain_name + reset_url_suffix + "?key="+  randomKey;
+        mailService.sendSimpleMail("系统重置密码邮件", content, email);
+
+    }
+
+    //step 2： 密码重置
+    public User reset(String key, String password) {
+        User updateUser = new User();
+
+        //从redis中获取要重置密码的用户的email
+        String email = getResetKeyEmail(key);
+        updateUser.setEmail(email);
+
+        List<String> encypted_info = null;
+        try {
+            encypted_info = HashUtil.hashSSHA(password);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        updateUser.setSalt(encypted_info.get(0));
+        updateUser.setPassword(encypted_info.get(1));
+
+        update(updateUser);
+
+        return getUserByEmail(email);
+    }
+
+    //从redis中获取要重置密码的用户的email
+    public String getResetKeyEmail(String key) {
+        return  redisTemplate.opsForValue().get(key);
+    }
+
 
     //4 修改用户信息
+    @Transactional(rollbackFor = Exception.class)
+    public User update(User user) {
+
+        if (user.getEmail() == null) {
+            return null;
+        }
+
+        //user表示一个刚刚修改了密码的实体，那么设置新密码
+        if (!Strings.isNullOrEmpty(user.getPassword()) ) {
+
+            List<String> encypted_info = null;
+            try {
+                encypted_info = HashUtil.hashSSHA(user.getPassword());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            user.setSalt(encypted_info.get(0));
+            user.setPassword(encypted_info.get(1));
+        }
+
+        userMapper.updateByEmail(user);
+
+        return getUserByEmail(user.getEmail());
+    }
 
     //log out
     public void invalidate(String token) {

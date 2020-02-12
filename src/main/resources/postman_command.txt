@@ -27,6 +27,25 @@ http://localhost:8080/user/get?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3
 http://localhost:8080/user/logout?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJmcXlhbmdfdXNlciIsIm5hbWUiOiJob25kYSIsImV4cCI6MTU4MTAwOTk2MSwiZW1haWwiOiJmcXl5YW5nQGdtYWlsLmNvbSIsInRzIjoiMTU4MDkyMzU2MSJ9.5s0W3O2PzHQgVlugWygjLEZUHf3pWLJlPpKXAbToBpI
 
 
+修改用户信息
+http://localhost:8080/user/update
+
+{
+	"login_name":"accord",
+	"password":"accord3",
+	"email":"fqyyang@gmail.com"}
+
+
+重置密码：
+    1 第一步：
+        http://localhost:8080/user/resetNotify?email=fqyyang@gmail.com
+
+    2 第二步：
+        邮件会收到这个：127.0.0.1:8080/user/rest?key=reset_niMwCpvuZg
+        于是，利用上面这个key，再结合新的密码"hello"，来调用下面api:
+
+        http://localhost:8080/user/reset?key=reset_niMwCpvuZg&password=hello
+
 5 测试分页1
 http://localhost:8080/user/page?limit=2&offset=3
 

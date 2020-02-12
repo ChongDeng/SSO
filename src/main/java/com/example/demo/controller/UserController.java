@@ -21,10 +21,9 @@ public class UserController {
 
     //----------------------1 注册----------------------------------
     @RequestMapping("register")
-    public RestResponse<User> register(@RequestBody User user){
+    public RestResponse register(@RequestBody User user){
         if(!userService.addAccount(user))
             return RestResponse.error(RestCode.REGISTER_FAILURE);
-
         return RestResponse.success();
     }
 
@@ -32,7 +31,7 @@ public class UserController {
      * 1.2 激活注册用户
      */
     @RequestMapping("enable")
-    public RestResponse<Object> enable(String key){
+    public RestResponse enable(String key){
         userService.enable(key);
         return RestResponse.success();
     }
@@ -43,12 +42,8 @@ public class UserController {
     public RestResponse<SignInResponse> auth(@RequestBody User user){
 
         Pair<User, String> pair = userService.auth(user.getEmail(),user.getPassword());
+        SignInResponse signInResponse =  new SignInResponse(pair.getKey(), pair.getValue());
 
-        User entity = pair.getKey();
-        entity.setPassword("");
-        entity.setSalt("");
-
-        SignInResponse signInResponse =  new SignInResponse(entity, pair.getValue());
         return RestResponse.success(signInResponse);
     }
 
@@ -62,7 +57,7 @@ public class UserController {
     //------------------------ log out --------------------------
     @PassToken
     @RequestMapping("logout")
-    public RestResponse<Object> logout(String token){
+    public RestResponse logout(String token){
         userService.invalidate(token);
         return RestResponse.success();
     }
@@ -90,17 +85,37 @@ public class UserController {
         return RestResponse.success(response);
     }
 
-//    @RequestMapping("update")
-//    public RestResponse<User> update(@RequestBody User user){
-//        User updateUser = userService.updateUser(user);
-//        return RestResponse.success(updateUser);
-//    }
-//
-//    @RequestMapping("reset")
-//    public RestResponse<User> reset(String key ,String password){
-//        User updateUser = userService.reset(key,password);
-//        return RestResponse.success(updateUser);
-//    }
+    //------------------------ 更新用户  --------------------------
+    @RequestMapping("update")
+    public RestResponse<User> update(@RequestBody User user){
+        User updateUser = userService.update(user);
+
+        //以保密的形式返回给客户端
+        updateUser.setPassword("***");
+        updateUser.setSalt("***");
+
+        return RestResponse.success(updateUser);
+    }
+
+    //------------------------ 重置密码  --------------------------
+    //step 1: 发送重置密码的邮件
+    @RequestMapping("resetNotify")
+    public RestResponse<User> resetNotify(String email){
+
+        String reset_url_suffix = "/user/rest";
+        userService.resetNotify(email, reset_url_suffix);
+        return RestResponse.success();
+    }
+
+    //step 2:
+    @RequestMapping("reset")
+    public RestResponse<User> reset(String key ,String password){
+        User updateUser = userService.reset(key,password);
+        return RestResponse.success(updateUser);
+    }
+
+
+
 //
 //    @RequestMapping("getKeyEmail")
 //    public RestResponse<String> getKeyEmail(String key){
@@ -108,9 +123,5 @@ public class UserController {
 //        return RestResponse.success(email);
 //    }
 //
-//    @RequestMapping("resetNotify")
-//    public RestResponse<User> resetNotify(String email,String url){
-//        userService.resetNotify(email,url);
-//        return RestResponse.success();
-//    }
+
 }
