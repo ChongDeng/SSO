@@ -6,9 +6,43 @@ mybatis自动生成了:
                 （2）或者像在UserSqlProvider类中实现updateByEmail(User record)方法那样
  但是:
 
-    3 没有很好的remove  => solution: 请参考我实现的IssueAttachmentSqlProvider中的 remove(IssueAttachment record) 方法
+    3 没有很好的remove  => solution: 请参考我实现的UserSystemRoleSqlProvider中的 remove(UserSystemRole record) 方法
 
-    4 没有很好的query   => solution:  请参考我实现的UserSqlProvider中的getUsers(User record)方法和getPageUsers(User record, PageParams pageParams)方法
+    4 没有很好的query   => solution:  请参考我实现的UserSystemRoleSqlProvider中的getItems(UserSystemRole record)方法
+
+
+CRUD总结：
+   1 insert使用现成的insertSelective方法
+
+   2 remove和query: 参考UserSystemRoleSqlProvider中的实现：
+       第一步：
+           实现UserSystemRoleSqlProvider中的方法：
+               public String remove(UserSystemRole record)
+               public String getItems(UserSystemRole record) {
+
+       第二步：
+           在UserSystemRoleMapper中实现：
+
+                 //1 删
+                 @DeleteProvider(type=UserSystemRoleSqlProvider.class, method="remove")
+                 int remove(UserSystemRole record);
+
+
+                 //3 查
+                 @SelectProvider(type=UserSystemRoleSqlProvider.class, method="getItems")
+                 List<UserSystemRole> getItems(UserSystemRole record);
+
+    3 修改：
+         因为各种应用场景的不同的特性，所以：
+            (1) 有时，不适合在sqlprovider类中实现 =》请直接在mapper类中实现。 例如，在UserSystemRoleMapper中实现：
+                        @Update({
+                                "update user_system_role",
+                                "set system_role_id = #{new_role_id}",
+                                "where user_id = #{user_id} and system_role_id = #{system_role_id}"
+                        })
+                        int update(@Param("user_id") Long user_id, @Param("system_role_id") Long system_role_id, @Param("new_role_id") Long new_role_id);
+
+            (2) 有时，适合在这个类中实现，例如在UserSqlProvider类中实现updateByEmail(User record)方法那样
 
 
 遇到的问题：
